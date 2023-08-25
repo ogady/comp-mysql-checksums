@@ -1,0 +1,4 @@
+server1:
+  dsn: "user1:password1@tcp(host1:3306)/database1"
+server2:
+  dsn: "user2:password2@tcp(host2:3306)/database2"
