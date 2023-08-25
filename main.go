@@ -126,14 +126,29 @@ func main() {
 		log.Fatalf("Error parsing YAML file: %s", err)
 	}
 
-	checksums1, err := getTableChecksums(config.Server1.DSN, *schema, *parallelism)
-	if err != nil {
-		log.Fatalf("Error getting checksums for server 1: %s", err)
-	}
+	var wg sync.WaitGroup
+	var checksums1, checksums2 map[string]int64
+	var err1, err2 error
 
-	checksums2, err := getTableChecksums(config.Server2.DSN, *schema, *parallelism)
-	if err != nil {
-		log.Fatalf("Error getting checksums for server 2: %s", err)
+	wg.Add(2) // 2つのgoroutineを起動するので、カウンタを2に設定
+
+	go func() {
+		defer wg.Done() // 処理が終了したら、カウンタをデクリメント
+		checksums1, err1 = getTableChecksums(config.Server1.DSN, *schema, *parallelism)
+	}()
+
+	go func() {
+		defer wg.Done() // 処理が終了したら、カウンタをデクリメント
+		checksums2, err2 = getTableChecksums(config.Server2.DSN, *schema, *parallelism)
+	}()
+
+	wg.Wait() // すべてのgoroutineが終了するまで待つ
+
+	if err1 != nil {
+		log.Fatalf("Error getting checksums for server 1: %s", err1)
+	}
+	if err2 != nil {
+		log.Fatalf("Error getting checksums for server 2: %s", err2)
 	}
 
 	mismatchedTables := []string{}
