@@ -29,7 +29,7 @@ func getTableChecksums(dsn string) (map[string]int64, error) {
 		return nil, err
 	}
 	defer db.Close()
-
+	log.Println("Connected to database" + dsn)
 	rows, err := db.Query("SHOW TABLES")
 	if err != nil {
 		return nil, err
@@ -42,7 +42,7 @@ func getTableChecksums(dsn string) (map[string]int64, error) {
 		if err != nil {
 			return nil, err
 		}
-
+		log.Print("Checking table " + tableName)
 		row := db.QueryRow(fmt.Sprintf("CHECKSUM TABLE %s", tableName))
 		var table string
 		var checksum int64
