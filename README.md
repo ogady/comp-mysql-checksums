@@ -1,0 +1,2 @@
+# comp-mysql-checksums
+MySQLサーバー間で特定のDBスキーマの全テーブルのchecksumを比較するツール
