@@ -106,13 +106,19 @@ func main() {
 	configFile := flag.String("f", "", "Path to the YAML configuration file")
 	parallelism := flag.Int("p", 1, "Number of parallel threads")
 	schema := flag.String("s", "", "Schema name")
+	schemaSource := flag.String("ss", "", "Schema of source")
+	schemaTarget := flag.String("st", "", "Schema of target")
 	flag.Parse()
 
 	if *configFile == "" {
 		log.Fatal("Please specify a configuration file")
 	}
-	if *schema == "" {
-		log.Fatal("Please specify a schema name")
+	if *schema == "" && (*schemaSource == "" || *schemaTarget == ""){
+		log.Fatal("Please specify a schema")
+	}
+	if *schema != "" {
+		*schemaSource = *schema
+		*schemaTarget = *schema
 	}
 
 	yamlFile, err := os.ReadFile(*configFile)
@@ -134,12 +140,12 @@ func main() {
 
 	go func() {
 		defer wg.Done() // 処理が終了したら、カウンタをデクリメント
-		checksums1, err1 = getTableChecksums(config.Server1.DSN, *schema, *parallelism)
+		checksums1, err1 = getTableChecksums(config.Server1.DSN, *schemaSource, *parallelism)
 	}()
 
 	go func() {
 		defer wg.Done() // 処理が終了したら、カウンタをデクリメント
-		checksums2, err2 = getTableChecksums(config.Server2.DSN, *schema, *parallelism)
+		checksums2, err2 = getTableChecksums(config.Server2.DSN, *schemaTarget, *parallelism)
 	}()
 
 	wg.Wait() // すべてのgoroutineが終了するまで待つ
