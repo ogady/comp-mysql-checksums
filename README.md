@@ -16,3 +16,8 @@ export PATH=$PATH:$GOBIN
 ```
 comp-mysql-checksums -f ./config.yaml -p 4 -s ${Target Database Schema}
 ```
+
+比較対象のSchemaを別にしたい場合は引数を変える
+```
+comp-mysql-checksums -f ./config.yaml -p 4 -ss ${Target Database Schema 1} -st ${Target Database Schema 2}
+```
